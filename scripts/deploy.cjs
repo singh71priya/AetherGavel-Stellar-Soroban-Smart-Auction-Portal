@@ -177,43 +177,66 @@ async function run() {
     console.log('Initializing contract state...');
     const contract = new Contract(contractId);
     
-    const latestAccount = await server.getAccount(deployerPublicKey);
-    
-    const initTx = new TransactionBuilder(latestAccount, {
-      fee: '100',
-      networkPassphrase: Networks.TESTNET,
-    })
-      .addOperation(
-        contract.call(
-          'initialize',
-          deployerAddress.toScVal(), // admin
-          Address.fromString(Asset.native().contractId(Networks.TESTNET)).toScVal(), // token (Native SAC)
-          nativeToScVal('AetherGavel #804: Celestial Core', { type: 'string' }), // title
-          nativeToScVal(100000000n, { type: 'i128' }), // min_bid (10 XLM, since XLM has 7 decimals, 10 * 10^7 = 100000000 stroops)
-          nativeToScVal(1800n, { type: 'u64' }) // duration: 1800 seconds (30 minutes) for easy demo/testing!
-        )
-      )
-      .setTimeout(30)
-      .build();
+    async function callContractMethod(methodName, args) {
+      const account = await server.getAccount(deployerPublicKey);
+      const tx = new TransactionBuilder(account, {
+        fee: '100',
+        networkPassphrase: Networks.TESTNET,
+      })
+        .addOperation(contract.call(methodName, ...args))
+        .setTimeout(30)
+        .build();
 
-    console.log('Simulating and preparing initialization transaction...');
-    const preparedInitTx = await server.prepareTransaction(initTx);
-    preparedInitTx.sign(deployerKeypair);
+      console.log(`Simulating and preparing ${methodName} transaction...`);
+      const preparedTx = await server.prepareTransaction(tx);
+      preparedTx.sign(deployerKeypair);
 
-    console.log('Submitting initialization transaction...');
-    const initSendResult = await server.sendTransaction(preparedInitTx);
-    if (initSendResult.status !== 'PENDING') {
-      throw new Error(`Initialization submission failed: ${JSON.stringify(initSendResult)}`);
+      console.log(`Submitting ${methodName} transaction...`);
+      const sendResult = await server.sendTransaction(preparedTx);
+      if (sendResult.status !== 'PENDING') {
+        throw new Error(`Submission failed for ${methodName}: ${JSON.stringify(sendResult)}`);
+      }
+
+      const receipt = await pollTransaction(sendResult.hash);
+      console.log(`Execution of ${methodName} successful!`);
+      return receipt;
     }
 
-    await pollTransaction(initSendResult.hash);
+    // Call initialize with the native asset contract ID as token
+    await callContractMethod('initialize', [
+      Address.fromString(Asset.native().contractId(Networks.TESTNET)).toScVal()
+    ]);
     console.log('Contract initialized successfully!');
 
-    // 7. Write configuration to src/contract-config.json
+    // Wait a brief moment
+    await sleep(2000);
+
+    // 7. Seed three default auctions
+    console.log('Seeding default auctions...');
+    const seedAuctions = [
+      { title: 'AetherGavel #804: Celestial Core', minBid: 100000000n, duration: 1800n },
+      { title: 'Chronos Hourglass: Temporal Sands', minBid: 250000000n, duration: 1800n },
+      { title: 'Nebula Aegis: Quantum Bulwark', minBid: 500000000n, duration: 1800n }
+    ];
+
+    for (const item of seedAuctions) {
+      console.log(`Creating seed auction: "${item.title}"...`);
+      await callContractMethod('create_auction', [
+        deployerAddress.toScVal(),
+        nativeToScVal(item.title, { type: 'string' }),
+        nativeToScVal(item.minBid, { type: 'i128' }),
+        nativeToScVal(item.duration, { type: 'u64' })
+      ]);
+      await sleep(2000);
+    }
+    console.log('Seeding complete!');
+
+    // 8. Write configuration to src/contract-config.json
     const configPath = path.resolve(__dirname, '../src/contract-config.json');
     const configData = {
       contractId: contractId,
       admin: deployerPublicKey,
+      adminSecret: deployerKeypair.secret(),
       tokenAddress: Asset.native().contractId(Networks.TESTNET),
       networkPassphrase: Networks.TESTNET,
       rpcUrl: RPC_URL,

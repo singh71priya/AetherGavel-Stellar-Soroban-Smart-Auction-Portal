@@ -1,32 +1,25 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, token, Address, Env, String, Symbol};
-
-#[contracttype]
-#[derive(Clone)]
-pub enum DataKey {
-    Admin,
-    Token,
-    Title,
-    MinBid,
-    EndTime,
-    HighestBid,
-    HighestBidder,
-    Ended,
-    Initialized,
-}
+use soroban_sdk::{contract, contractimpl, contracttype, token, Address, Env, String, Symbol, Vec};
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct AuctionState {
-    pub admin: Address,
-    pub token: Address,
+pub struct AuctionDetails {
+    pub id: u32,
+    pub creator: Address,
     pub title: String,
     pub min_bid: i128,
     pub end_time: u64,
     pub highest_bid: i128,
     pub highest_bidder: Option<Address>,
     pub ended: bool,
-    pub current_time: u64,
+}
+
+#[contracttype]
+#[derive(Clone)]
+pub enum DataKey {
+    NextId,
+    Auction(u32),
+    Token,
 }
 
 #[contract]
@@ -34,150 +27,155 @@ pub struct AetherGavelContract;
 
 #[contractimpl]
 impl AetherGavelContract {
-    /// Initialize the auction. Can only be called once.
-    pub fn initialize(
+    /// Initialize the contract globally with the bidding token.
+    pub fn initialize(env: Env, token: Address) {
+        if env.storage().instance().has(&DataKey::Token) {
+            panic!("Already initialized");
+        }
+        env.storage().instance().set(&DataKey::Token, &token);
+        env.storage().instance().set(&DataKey::NextId, &1_u32);
+    }
+
+    /// Create a new auction on-chain. Returns the new auction ID.
+    pub fn create_auction(
         env: Env,
-        admin: Address,
-        token: Address,
+        creator: Address,
         title: String,
         min_bid: i128,
         duration_secs: u64,
-    ) {
-        if env.storage().instance().has(&DataKey::Initialized) {
-            panic!("Auction already initialized");
-        }
+    ) -> u32 {
+        creator.require_auth();
 
-        let current_time = env.ledger().timestamp();
-        let end_time = current_time + duration_secs;
+        let next_id: u32 = env.storage().instance().get(&DataKey::NextId).unwrap_or(1);
+        let end_time = env.ledger().timestamp() + duration_secs;
 
-        env.storage().instance().set(&DataKey::Admin, &admin);
-        env.storage().instance().set(&DataKey::Token, &token);
-        env.storage().instance().set(&DataKey::Title, &title);
-        env.storage().instance().set(&DataKey::MinBid, &min_bid);
-        env.storage().instance().set(&DataKey::EndTime, &end_time);
-        env.storage().instance().set(&DataKey::HighestBid, &0_i128);
-        env.storage().instance().set(&DataKey::Ended, &false);
-        env.storage().instance().set(&DataKey::Initialized, &true);
+        let auction = AuctionDetails {
+            id: next_id,
+            creator: creator.clone(),
+            title,
+            min_bid,
+            end_time,
+            highest_bid: 0,
+            highest_bidder: None,
+            ended: false,
+        };
+
+        env.storage().instance().set(&DataKey::Auction(next_id), &auction);
+        env.storage().instance().set(&DataKey::NextId, &(next_id + 1));
+
+        // Emit dynamic auction creation event
+        env.events().publish(
+            (Symbol::new(&env, "auction_created"), next_id),
+            (creator, end_time),
+        );
+
+        next_id
     }
 
-    /// Place a bid on the auction.
-    pub fn bid(env: Env, bidder: Address, amount: i128) {
+    /// Place a bid on a specific auction.
+    pub fn bid(env: Env, bidder: Address, auction_id: u32, amount: i128) {
         bidder.require_auth();
 
-        // 1. Check initialization
-        if !env.storage().instance().has(&DataKey::Initialized) {
-            panic!("Auction not initialized");
-        }
+        let mut auction: AuctionDetails = env
+            .storage()
+            .instance()
+            .get(&DataKey::Auction(auction_id))
+            .unwrap_or_else(|| panic!("Auction not found"));
 
-        // 2. Check active status (not ended and time hasn't expired)
-        let ended: bool = env.storage().instance().get(&DataKey::Ended).unwrap_or(false);
-        if ended {
+        if auction.ended {
             panic!("Auction already ended");
         }
 
-        let end_time: u64 = env.storage().instance().get(&DataKey::EndTime).unwrap();
         let current_time = env.ledger().timestamp();
-        if current_time >= end_time {
+        if current_time >= auction.end_time {
             panic!("Auction time has expired");
         }
 
-        // 3. Verify bid amount is greater than current highest bid and >= min bid
-        let min_bid: i128 = env.storage().instance().get(&DataKey::MinBid).unwrap();
-        if amount < min_bid {
-            panic!("Bid amount is lower than minimum bid");
+        if amount < auction.min_bid {
+            panic!("Bid is below minimum bid amount");
         }
 
-        let highest_bid: i128 = env.storage().instance().get(&DataKey::HighestBid).unwrap_or(0);
-        if amount <= highest_bid {
-            panic!("Bid amount must be strictly greater than current highest bid");
+        if amount <= auction.highest_bid {
+            panic!("Bid must be strictly higher than the current highest bid");
         }
 
-        // 4. Handle token transfers
+        // Perform token operations
         let token_addr: Address = env.storage().instance().get(&DataKey::Token).unwrap();
         let token_client = token::Client::new(&env, &token_addr);
 
-        // Transfer new bid tokens from bidder to this contract
+        // Transfer new bid tokens from bidder to the contract
         token_client.transfer(&bidder, &env.current_contract_address(), &amount);
 
-        // Refund the previous highest bidder, if they exist
-        let prev_bidder: Option<Address> = env.storage().instance().get(&DataKey::HighestBidder);
-        if let Some(prev) = prev_bidder {
-            if highest_bid > 0 {
-                token_client.transfer(&env.current_contract_address(), &prev, &highest_bid);
+        // Refund the previous highest bidder if one exists
+        if let Some(prev_bidder) = auction.highest_bidder {
+            if auction.highest_bid > 0 {
+                token_client.transfer(&env.current_contract_address(), &prev_bidder, &auction.highest_bid);
             }
         }
 
-        // 5. Update state
-        env.storage().instance().set(&DataKey::HighestBid, &amount);
-        env.storage().instance().set(&DataKey::HighestBidder, &bidder);
+        // Update auction details
+        auction.highest_bid = amount;
+        auction.highest_bidder = Some(bidder.clone());
 
-        // 6. Emit events for real-time synchronization
+        env.storage().instance().set(&DataKey::Auction(auction_id), &auction);
+
+        // Emit events matching format: topic: ("bid_placed", auction_id, bidder), value: (amount, current_time)
         env.events().publish(
-            (Symbol::new(&env, "bid_placed"), bidder.clone()),
+            (Symbol::new(&env, "bid_placed"), auction_id, bidder),
             (amount, current_time),
         );
     }
 
-    /// Claim the highest bid (seller claims funds) and close the auction.
-    /// Can only be called after the auction end time.
-    pub fn claim(env: Env) {
-        if !env.storage().instance().has(&DataKey::Initialized) {
-            panic!("Auction not initialized");
-        }
+    /// Claim the highest bid for a specific auction ID.
+    pub fn claim(env: Env, auction_id: u32) {
+        let mut auction: AuctionDetails = env
+            .storage()
+            .instance()
+            .get(&DataKey::Auction(auction_id))
+            .unwrap_or_else(|| panic!("Auction not found"));
 
-        let ended: bool = env.storage().instance().get(&DataKey::Ended).unwrap_or(false);
-        if ended {
+        if auction.ended {
             panic!("Auction already claimed");
         }
 
-        let end_time: u64 = env.storage().instance().get(&DataKey::EndTime).unwrap();
         let current_time = env.ledger().timestamp();
-        if current_time < end_time {
+        if current_time < auction.end_time {
             panic!("Auction has not ended yet");
         }
 
-        let admin: Address = env.storage().instance().get(&DataKey::Admin).unwrap();
-        let highest_bid: i128 = env.storage().instance().get(&DataKey::HighestBid).unwrap_or(0);
-
-        if highest_bid > 0 {
+        if auction.highest_bid > 0 {
             let token_addr: Address = env.storage().instance().get(&DataKey::Token).unwrap();
             let token_client = token::Client::new(&env, &token_addr);
-            // Transfer winning bid amount to admin/seller
-            token_client.transfer(&env.current_contract_address(), &admin, &highest_bid);
+            // Transfer winning bid amount to creator (seller)
+            token_client.transfer(&env.current_contract_address(), &auction.creator, &auction.highest_bid);
         }
 
-        env.storage().instance().set(&DataKey::Ended, &true);
+        auction.ended = true;
+        env.storage().instance().set(&DataKey::Auction(auction_id), &auction);
 
-        let winner: Option<Address> = env.storage().instance().get(&DataKey::HighestBidder);
         env.events().publish(
-            (Symbol::new(&env, "auction_claimed"), admin),
-            (winner, highest_bid, current_time),
+            (Symbol::new(&env, "auction_claimed"), auction_id, auction.creator.clone()),
+            (auction.highest_bidder.clone(), auction.highest_bid, current_time),
         );
     }
 
-    /// Retrieve the current state of the auction.
-    pub fn get_state(env: Env) -> AuctionState {
-        let default_addr = env.current_contract_address(); // safe fallback before init
-        let admin = env.storage().instance().get(&DataKey::Admin).unwrap_or_else(|| default_addr.clone());
-        let token = env.storage().instance().get(&DataKey::Token).unwrap_or_else(|| default_addr.clone());
-        let title = env.storage().instance().get(&DataKey::Title).unwrap_or_else(|| String::from_str(&env, "Uninitialized"));
-        let min_bid = env.storage().instance().get(&DataKey::MinBid).unwrap_or(0);
-        let end_time = env.storage().instance().get(&DataKey::EndTime).unwrap_or(0);
-        let highest_bid = env.storage().instance().get(&DataKey::HighestBid).unwrap_or(0);
-        let highest_bidder = env.storage().instance().get(&DataKey::HighestBidder);
-        let ended = env.storage().instance().get(&DataKey::Ended).unwrap_or(false);
-        let current_time = env.ledger().timestamp();
+    /// Retrieve details of a single auction.
+    pub fn get_auction(env: Env, auction_id: u32) -> AuctionDetails {
+        env.storage()
+            .instance()
+            .get(&DataKey::Auction(auction_id))
+            .unwrap_or_else(|| panic!("Auction not found"))
+    }
 
-        AuctionState {
-            admin,
-            token,
-            title,
-            min_bid,
-            end_time,
-            highest_bid,
-            highest_bidder,
-            ended,
-            current_time,
+    /// Retrieve all registered auctions.
+    pub fn get_all_auctions(env: Env) -> Vec<AuctionDetails> {
+        let next_id: u32 = env.storage().instance().get(&DataKey::NextId).unwrap_or(1);
+        let mut list = Vec::new(&env);
+        for id in 1..next_id {
+            if let Some(auction) = env.storage().instance().get::<_, AuctionDetails>(&DataKey::Auction(id)) {
+                list.push_back(auction);
+            }
         }
+        list
     }
 }

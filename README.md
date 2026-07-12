@@ -143,39 +143,4 @@ If you modify the smart contract and wish to compile/redeploy it:
     node scripts/deploy.cjs
     ```
 
----
-
-## ☁️ Vercel Deployment Instructions
-
-Follow these step-by-step instructions to deploy the AetherGavel frontend to Vercel:
-
-### Option A: Vercel CLI (Fastest)
-1. Install Vercel CLI globally:
-   ```bash
-   npm install -g vercel
-   ```
-2. Run the deployment wizard from the project root:
-   ```bash
-   vercel
-   ```
-   * Set the project name as `aethergavel`
-   * Keep default settings (Vite build commands are auto-detected as `npm run build` and output directory as `dist`).
-3. Deploy to production:
-   ```bash
-   vercel --prod
-   ```
-
-### Option B: GitHub Integration (Recommended)
-1. Push your updated code to your GitHub repository:
-   ```bash
-   git add .
-   git commit -m "feat: upgrade AetherGavel to senior multi-item auction house"
-   git push origin main
-   ```
-2. Log into the [Vercel Dashboard](https://vercel.com).
-3. Click **Add New** ➔ **Project**.
-4. Import your `AetherGavel` repository.
-5. In **Build and Development Settings**, Vercel will automatically detect the **Vite** framework preset:
-   * Build Command: `npm run build` or `vite build`
-   * Output Directory: `dist`
-6. Click **Deploy**. Vercel will build and assign a free custom SSL domain (e.g., `aethergavel.vercel.app`) with automatic redeployments on every commit!
+   v

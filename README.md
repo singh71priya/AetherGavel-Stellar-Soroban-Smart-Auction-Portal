@@ -64,6 +64,44 @@ Clickable hyperlinks to the transaction on `Stellar.expert` are generated.
 
 ---
 
+## 📸 Application Visual Walkthrough
+
+Here is a visual walkthrough of the **AetherGavel** multi-item auction house showcasing the completed features and Level 2 requirements:
+
+### 1. Main Dashboard & Active Lobby Grid
+The active item lobby displays all active or finalized smart auctions on-chain with rarity indicators, dynamic listing cards, and countdown timers:
+![Lobby Grid](screenshots/lobby.png)
+
+### 2. Connected State & Wallet Integration
+Connecting your wallet uses `StellarWalletsKit` supporting Freighter, Albedo, Hana, and xBull:
+![Connected State](screenshots/connected.png)
+
+### 3. Placing an On-Chain Bid
+Inputting a bid amount and placing it triggers a transaction simulation, signature, and submission:
+![Placing Bid](screenshots/bid_placed.png)
+
+### 4. Interactive Transaction Lifecycle
+An interactive status timeline tracks the transaction step-by-step from wallet authorization to ledger confirmation:
+![Transaction Lifecycle](screenshots/lifecycle.png)
+
+### 5. Dynamic Bid Velocity Chart
+The dashboard automatically plots bid history in a responsive SVG line chart:
+![SVG Price Chart](screenshots/live_timmer_bid.png)
+
+### 6. Streaming Real-Time Ledger Events
+The real-time log listens to Soroban event logs to synchronize updates and list active bidders:
+![Bid Logs Feed](screenshots/bid_log.png)
+
+### 7. Deploying New Items On-Chain
+Connected users can list their own custom assets dynamically by completing the "List Asset" form:
+![List Asset Form](screenshots/deploy_item.png)
+
+### 8. Finalizing and Settling Auctions
+When an auction expires, the finalization step distributes the escrow funds to the creator on-chain:
+![Finalize Auction](screenshots/auction%20done_.png)
+
+---
+
 ## 🛠️ Local Development & Quick Start
 
 Follow these steps to run the application locally:

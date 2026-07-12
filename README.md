@@ -8,6 +8,7 @@
 
 The smart contract is compiled, deployed, initialized, and seeded on the **Stellar Testnet**:
 
+*   **Live Portal Link:** [https://aether-gavel.vercel.app/](https://aether-gavel.vercel.app/)
 *   **Smart Contract Address:** `CDV2KGOMMSSYWAKGO3ZOVUKB5ADNAJVSYFAB4TJI42NE73WKHHVSYXJB`
     *   *Verify on Stellar.expert:* [Stellar Explorer Contract Link](https://stellar.expert/explorer/testnet/contract/CDV2KGOMMSSYWAKGO3ZOVUKB5ADNAJVSYFAB4TJI42NE73WKHHVSYXJB)
 *   **WASM Upload Transaction Hash:** `aa49fc19cae0a638dab1f9d9386f9f9964faab8022323f661269d3751af21805`

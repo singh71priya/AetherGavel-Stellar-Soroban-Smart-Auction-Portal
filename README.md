@@ -9,20 +9,20 @@
 The smart contract is compiled, deployed, initialized, and seeded on the **Stellar Testnet**:
 
 *   **Live Portal Link:** [https://aether-gavel.vercel.app/](https://aether-gavel.vercel.app/)
-*   **Smart Contract Address:** `CDV2KGOMMSSYWAKGO3ZOVUKB5ADNAJVSYFAB4TJI42NE73WKHHVSYXJB`
-    *   *Verify on Stellar.expert:* [Stellar Explorer Contract Link](https://stellar.expert/explorer/testnet/contract/CDV2KGOMMSSYWAKGO3ZOVUKB5ADNAJVSYFAB4TJI42NE73WKHHVSYXJB)
-*   **WASM Upload Transaction Hash:** `aa49fc19cae0a638dab1f9d9386f9f9964faab8022323f661269d3751af21805`
-    *   *Verify on Stellar.expert:* [WASM Upload Tx Details](https://stellar.expert/explorer/testnet/tx/aa49fc19cae0a638dab1f9d9386f9f9964faab8022323f661269d3751af21805)
-*   **Contract Instantiation Transaction Hash:** `290af384368b3ec83d1ef4c9a1e431388d283fb30dfaea9c53d62d78fd1d9394`
-    *   *Verify on Stellar.expert:* [Instantiation Tx Details](https://stellar.expert/explorer/testnet/tx/290af384368b3ec83d1ef4c9a1e431388d283fb30dfaea9c53d62d78fd1d9394)
-*   **Contract Initialization (`initialize`) Transaction Hash:** `679c2e1dd5d7b09c2279513c680aaf3d895df592cb36a15cb8ac2d136df69f03`
-    *   *Verify on Stellar.expert:* [Initialization Tx Details](https://stellar.expert/explorer/testnet/tx/679c2e1dd5d7b09c2279513c680aaf3d895df592cb36a15cb8ac2d136df69f03)
+*   **Smart Contract Address:** `CASWUUXTETDACBYXKFJY73ZXFHD7ROUUZYLIXSBWHUCFLFWSS6XRVYK5`
+    *   *Verify on Stellar.expert:* [Stellar Explorer Contract Link](https://stellar.expert/explorer/testnet/contract/CASWUUXTETDACBYXKFJY73ZXFHD7ROUUZYLIXSBWHUCFLFWSS6XRVYK5)
+*   **WASM Upload Transaction Hash:** `736bacb951cd0b348d659e0cc747069fb124b5bfe48e48b9e6f6752b90cabc59`
+    *   *Verify on Stellar.expert:* [WASM Upload Tx Details](https://stellar.expert/explorer/testnet/tx/736bacb951cd0b348d659e0cc747069fb124b5bfe48e48b9e6f6752b90cabc59)
+*   **Contract Instantiation Transaction Hash:** `923fdb0e6ad6840358bc0211b6e258b56c4ec2d319ed18d8f2c3e0b58c2e2ba1`
+    *   *Verify on Stellar.expert:* [Instantiation Tx Details](https://stellar.expert/explorer/testnet/tx/923fdb0e6ad6840358bc0211b6e258b56c4ec2d319ed18d8f2c3e0b58c2e2ba1)
+*   **Contract Initialization (`initialize`) Transaction Hash:** `78f148cc86ae6d0d8408e5598e22a33b2c95adda788330c336668e3fb1bd6286`
+    *   *Verify on Stellar.expert:* [Initialization Tx Details](https://stellar.expert/explorer/testnet/tx/78f148cc86ae6d0d8408e5598e22a33b2c95adda788330c336668e3fb1bd6286)
 
 ### Seeded Items (Default State)
 Three default items have been successfully listed on-chain for verification:
-1.  **StellarBid #804: Celestial Core** (10 XLM opening bid, Tx: `10c07331a23dfd18c7fcce765d24d38d5336a4c9aa8df3cdca1f1d1200b4dc19`)
-2.  **Chronos Hourglass: Temporal Sands** (25 XLM opening bid, Tx: `9bff006a06c3e35e61edab70824902923c0549968d8d0882aa943754876fc712`)
-3.  **Nebula Aegis: Quantum Bulwark** (50 XLM opening bid, Tx: `92a0f019d7aaf885a87edbe059e6f185599b53eb8a01eb17d24f5b47569a9435`)
+1.  **StellarBid #804: Celestial Core** (10 XLM opening bid, Tx: `44c023251c6d2bdbf732301cd5606ede0f11707909d69bc226de9cc500b7138f`)
+2.  **Chronos Hourglass: Temporal Sands** (25 XLM opening bid, Tx: `2f89a5a0a40ac7231581289077c3c338e1955866ed1729f82070f6123110bb07`)
+3.  **Nebula Aegis: Quantum Bulwark** (50 XLM opening bid, Tx: `8bb3a816bd80ba6433879eb916b0202d55cf411ff5f63cf5825ff356a295e08a`)
 
 ---
 

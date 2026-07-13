@@ -8,7 +8,7 @@
 
 The smart contract is compiled, deployed, initialized, and seeded on the **Stellar Testnet**:
 
-*   **Live Portal Link:** [https://aether-gavel.vercel.app/](https://aether-gavel.vercel.app/)
+*   **Live Portal Link:** [https://aether-gavel-stellar-soroban-smart.vercel.app/](https://aether-gavel-stellar-soroban-smart.vercel.app/)
 *   **Smart Contract Address:** `CASWUUXTETDACBYXKFJY73ZXFHD7ROUUZYLIXSBWHUCFLFWSS6XRVYK5`
     *   *Verify on Stellar.expert:* [Stellar Explorer Contract Link](https://stellar.expert/explorer/testnet/contract/CASWUUXTETDACBYXKFJY73ZXFHD7ROUUZYLIXSBWHUCFLFWSS6XRVYK5)
 *   **WASM Upload Transaction Hash:** `736bacb951cd0b348d659e0cc747069fb124b5bfe48e48b9e6f6752b90cabc59`
@@ -69,37 +69,21 @@ Clickable hyperlinks to the transaction on `Stellar.expert` are generated.
 
 Here is a visual walkthrough of the **StellarBid** multi-item auction house showcasing the completed features and Level 2 requirements:
 
-### 1. Main Dashboard & Active Lobby Grid
+### 1. Main Dashboard & Product UI
 The active item lobby displays all active or finalized smart auctions on-chain with rarity indicators, dynamic listing cards, and countdown timers:
-![Lobby Grid](screenshots/lobby.png)
+![Product UI](screenshots/product_UI.png)
 
-### 2. Connected State & Wallet Integration
-Connecting your wallet uses `StellarWalletsKit` supporting Freighter, Albedo, Hana, and xBull:
-![Connected State](screenshots/connected.png)
+### 2. Wallet Integration Options
+Connecting your wallet uses `StellarWalletsKit` supporting multiple wallet providers natively:
+![Wallet Options](screenshots/wallet_options.png)
 
-### 3. Placing an On-Chain Bid
-Inputting a bid amount and placing it triggers a transaction simulation, signature, and submission:
-![Placing Bid](screenshots/bid_placed.png)
+### 3. Transaction Alerts & Feedback
+The UI features real-time feedback alerts tracking transaction states and on-chain verification:
+![Transaction Alerts](screenshots/alerts.png)
 
-### 4. Interactive Transaction Lifecycle
-An interactive status timeline tracks the transaction step-by-step from wallet authorization to ledger confirmation:
-![Transaction Lifecycle](screenshots/lifecycle.png)
-
-### 5. Dynamic Bid Velocity Chart
-The dashboard automatically plots bid history in a responsive SVG line chart:
-![SVG Price Chart](screenshots/live_timmer_bid.png)
-
-### 6. Streaming Real-Time Ledger Events
-The real-time log listens to Soroban event logs to synchronize updates and list active bidders:
-![Bid Logs Feed](screenshots/bid_log.png)
-
-### 7. Deploying New Items On-Chain
-Connected users can list their own custom assets dynamically by completing the "List Asset" form:
-![List Asset Form](screenshots/deploy_item.png)
-
-### 8. Finalizing and Settling Auctions
-When an auction expires, the finalization step distributes the escrow funds to the creator on-chain:
-![Finalize Auction](screenshots/auction%20done_.png)
+### 4. Verified On-Chain State
+Finalized auctions and active smart contract states stream verifiable ledger events:
+![Verified State](screenshots/verified.png)
 
 ---
 

@@ -1008,7 +1008,7 @@ export default function App() {
       <header className="header">
         <div className="brand">
           <Hammer size={28} style={{ color: 'var(--cyan)' }} />
-          <span className="brand-logo">AetherGavel</span>
+          <span className="brand-logo">StellarBid</span>
           <span className="brand-badge">Stellar Soroban</span>
         </div>
 
@@ -1350,7 +1350,7 @@ export default function App() {
                       ? 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=cover'
                       : 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=1964&auto=format&fit=cover'
                 } 
-                alt="AetherGavel" 
+                alt="StellarBid" 
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=1964&auto=format&fit=cover';

@@ -1,6 +1,6 @@
-# AetherGavel ✦ Stellar Soroban Smart Auction Portal
+# StellarBid ✦ Stellar Soroban Smart Auction Portal
 
-**AetherGavel** is a premium, real-time decentralized bidding and auction application built on the **Stellar Soroban Smart Contract Platform**. It provides a sleek, glassmorphic dark-theme interface that connects multiple browser extension wallets, tracks contract state through transaction simulation, and streams ledger event logs in real-time.
+**StellarBid** is a premium, real-time decentralized bidding and auction application built on the **Stellar Soroban Smart Contract Platform**. It provides a sleek, glassmorphic dark-theme interface that connects multiple browser extension wallets, tracks contract state through transaction simulation, and streams ledger event logs in real-time.
 
 ---
 
@@ -20,7 +20,7 @@ The smart contract is compiled, deployed, initialized, and seeded on the **Stell
 
 ### Seeded Items (Default State)
 Three default items have been successfully listed on-chain for verification:
-1.  **AetherGavel #804: Celestial Core** (10 XLM opening bid, Tx: `10c07331a23dfd18c7fcce765d24d38d5336a4c9aa8df3cdca1f1d1200b4dc19`)
+1.  **StellarBid #804: Celestial Core** (10 XLM opening bid, Tx: `10c07331a23dfd18c7fcce765d24d38d5336a4c9aa8df3cdca1f1d1200b4dc19`)
 2.  **Chronos Hourglass: Temporal Sands** (25 XLM opening bid, Tx: `9bff006a06c3e35e61edab70824902923c0549968d8d0882aa943754876fc712`)
 3.  **Nebula Aegis: Quantum Bulwark** (50 XLM opening bid, Tx: `92a0f019d7aaf885a87edbe059e6f185599b53eb8a01eb17d24f5b47569a9435`)
 
@@ -67,7 +67,7 @@ Clickable hyperlinks to the transaction on `Stellar.expert` are generated.
 
 ## 📸 Application Visual Walkthrough
 
-Here is a visual walkthrough of the **AetherGavel** multi-item auction house showcasing the completed features and Level 2 requirements:
+Here is a visual walkthrough of the **StellarBid** multi-item auction house showcasing the completed features and Level 2 requirements:
 
 ### 1. Main Dashboard & Active Lobby Grid
 The active item lobby displays all active or finalized smart auctions on-chain with rarity indicators, dynamic listing cards, and countdown timers:
